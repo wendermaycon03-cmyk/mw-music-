@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#070b14">
+<title>MW APP MUSIC</title>
+<style>
+:root{--bg:#070b14;--panel:#101827;--blue:#168bff;--cyan:#35d7ff;--text:#f4f8ff;--muted:#91a1b8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;padding-bottom:110px}
+button,input{font:inherit}
+button{cursor:pointer}
+header{height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;border-bottom:1px solid #1c2a40;background:#090e19;position:sticky;top:0;z-index:5}
+.logo{font-size:23px;font-weight:900;letter-spacing:-1px}.logo span{color:var(--cyan)}
+.pill{border:1px solid #1c80df;border-radius:20px;padding:8px 12px;color:var(--cyan);font-size:12px}
+.layout{display:grid;grid-template-columns:210px 1fr;gap:25px;max-width:1400px;margin:auto;padding:25px}
+aside{background:var(--panel);padding:20px;border-radius:18px;height:max-content;position:sticky;top:90px}
+.nav{display:block;width:100%;text-align:left;padding:13px;border:0;border-radius:9px;background:transparent;color:#c0cee1;margin:4px 0}
+.nav.active,.nav:hover{background:#153254;color:white}
+main{min-width:0}
+.hero{padding:35px;border-radius:22px;background:linear-gradient(115deg,#102d55,#0759a5 60%,#092038);position:relative;overflow:hidden}
+.hero:after{content:"♫";position:absolute;right:35px;top:-30px;font-size:180px;color:#ffffff12}
+.hero h1{font-size:clamp(28px,4vw,45px);margin:10px 0}
+.hero p{color:#d0e5ff;max-width:440px;line-height:1.6}
+.primary{background:var(--blue);color:white;border:0;border-radius:10px;padding:12px 17px;font-weight:bold}
+.searchbar{display:flex;gap:10px;margin:24px 0}
+.searchbar input{width:100%;min-width:0;background:var(--panel);border:1px solid #26374d;border-radius:12px;padding:14px;color:white;outline:none}
+.searchbar input:focus{border-color:var(--blue)}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:27px 0 15px}
+.section-head h2{font-size:20px;margin:0}
+.small{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:16px}
+.track{background:var(--panel);padding:12px;border:1px solid #1c2b41;border-radius:15px;min-width:0}
+.cover{width:100%;aspect-ratio:1;border-radius:11px;background:linear-gradient(135deg,#13355c,#087bc5,#101827);display:grid;place-items:center;font-size:45px;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover}
+.track h3{font-size:14px;margin:12px 0 5px;overflow-wrap:anywhere}
+.artist{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.track-actions{display:flex;gap:7px;margin-top:12px}
+.track-actions button{border:0;border-radius:8px;padding:9px;background:#1a2a40;color:white}
+.track-actions .play{background:var(--blue);flex:1}
+.empty{padding:30px;text-align:center;color:var(--muted);background:var(--panel);border-radius:14px;line-height:1.7}
+#player{position:fixed;bottom:0;left:0;right:0;z-index:10;background:#0c1422;border-top:1px solid #273a53;padding:12px 4%;display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:15px;align-items:center}
+.now{display:flex;gap:10px;align-items:center;min-width:0}
+.mini-cover{width:44px;height:44px;background:#123d69;border-radius:9px;display:grid;place-items:center;flex-shrink:0}
+.now strong,.now small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.now small{color:var(--muted);margin-top:4px}
+.controls{text-align:center}
+.controls button{background:transparent;color:white;border:0;font-size:20px;padding:5px 10px}
+.controls .mainplay{background:var(--blue);border-radius:50%;width:42px;height:42px}
+progress{width:100%;height:4px;accent-color:var(--cyan)}
+.time{display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
+.volume{text-align:right}.volume button{background:transparent;border:0;color:white;font-size:20px}
+#status{font-size:12px;color:var(--muted);margin-top:10px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:30px 10px}
+.ad{border:1px dashed #33445c;color:#7f90a8;text-align:center;border-radius:12px;padding:18px;margin-top:28px;font-size:12px}
+@media(max-width:720px){
+.layout{grid-template-columns:1fr;padding:15px}
+aside{position:static;padding:8px;display:flex;gap:5px;overflow:auto}
+.nav{white-space:nowrap;width:auto;margin:0;padding:11px}
+.hero{padding:24px}
+#player{grid-template-columns:1fr auto;gap:8px;padding:10px 12px}
+.controls{grid-column:1/-1;grid-row:2}
+.volume{display:none}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">MW <span>APP MUSIC</span></div>
+  <div class="pill">♫ SEU SOM, SEU ESTILO</div>
+</header>
+
+<div class="layout">
+<aside>
+  <button class="nav active" data-view="home">⌂ Início</button>
+  <button class="nav" data-view="search">⌕ Explorar músicas</button>
+  <button class="nav" data-view="favorites">♥ Favoritas</button>
+  <button class="nav" data-view="playlists">☷ Minha playlist</button>
+  <button class="nav" data-view="local">＋ Minhas músicas</button>
+</aside>
+
+<main>
+<section class="hero">
+  <div class="pill">MW MUSIC EXPERIENCE</div>
+  <h1>Sinta o som.<br>Viva a música.</h1>
+  <p>Descubra novas músicas, monte suas playlists e escute suas faixas favoritas em um só lugar.</p>
+  <button class="primary" onclick="document.querySelector('#query').focus()">Explorar agora ↗</button>
+</section>
+
+<div class="searchbar">
+  <input id="query" placeholder="Buscar música, artista ou gênero..." aria-label="Buscar música">
+  <button class="primary" id="searchBtn">Buscar</button>
+</div>
+
+<div id="content">
+  <div class="section-head"><h2>Bem-vindo ao MW Music</h2></div>
+  <div class="empty">Pesquise o catálogo de áudio do Internet Archive ou adicione arquivos de música que você tem direito de reproduzir.<br><br>Suas favoritas e playlists ficam salvas neste navegador.</div>
+</div>
+
+<div class="ad">ESPAÇO PARA ANÚNCIOS FUTUROS<br>Esta área poderá receber publicidade quando o site for monetizado.</div>
+<div id="status" role="status"></div>
+</main>
+</div>
+
+<div id="player">
+  <div class="now">
+    <div class="mini-cover">♫</div>
+    <div><strong id="nowTitle">Escolha uma música</strong><small id="nowArtist">MW APP MUSIC</small></div>
+  </div>
+  <div class="controls">
+    <button id="prev" aria-label="Anterior">⏮</button>
+    <button class="mainplay" id="toggle" aria-label="Reproduzir">▶</button>
+    <button id="next" aria-label="Próxima">⏭</button>
+    <div><progress id="progress" value="0" max="100"></progress></div>
+    <div class="time"><span id="elapsed">0:00</span><span id="duration">0:00</span></div>
+  </div>
+  <div class="volume">
+    <button id="mute" aria-label="Silenciar">🔊</button>
+    <input id="volume" type="range" min="0" max="1" step=".05" value=".8" aria-label="Volume">
+  </div>
+</div>
+<audio id="audio" preload="metadata"></audio>
+
+<footer>MW APP MUSIC · Ouça com responsabilidade e respeite os direitos dos artistas.</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const audio = $('audio');
+
+let tracks = [];
+let current = -1;
+let view = 'home';
+let favorites = JSON.parse(localStorage.getItem('mw_favorites') || '[]');
+let playlists = JSON.parse(localStorage.getItem('mw_playlists') || '[]');
+let playlist = JSON.parse(localStorage.getItem('mw_playlist') || '[]');
+let localTracks = [];
+
+function save(){
+  localStorage.setItem('mw_favorites',JSON.stringify(favorites));
+  localStorage.setItem('mw_playlists',JSON.stringify(playlists));
+  localStorage.setItem('mw_playlist',JSON.stringify(playlist));
+}
+function safe(s){
+  return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function msg(s){$('status').textContent=s}
+function fmt(s){
+  if(!Number.isFinite(s)) return '0:00';
+  return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+}
+function render(title,items){
+  $('content').innerHTML=`<div class="section-head"><h2>${safe(title)}</h2><span class="small">${items.length} faixas</span></div>`;
+  if(!items.length){
+    $('content').innerHTML+='<div class="empty">Nenhuma música encontrada aqui ainda.<br>Pesquise no catálogo ou adicione seus próprios arquivos.</div>';
+    return;
+  }
+  const grid=document.createElement('div');grid.className='grid';
+  items.forEach(t=>{
+    const card=document.createElement('article');card.className='track';
+    const cover=t.cover?`<img src="${safe(t.cover)}" alt="">`:'♫';
+    card.innerHTML=`<div class="cover">${cover}</div>
+      <h3>${safe(t.title)}</h3>
+      <div class="artist">${safe(t.artist)}</div>
+      <div class="track-actions"><button class="play">▶ Ouvir</button><button title="Favoritar">${favorites.includes(t.id)?'♥':'♡'}</button><button title="Adicionar à playlist">＋</button></div>`;
+    card.querySelector('.play').onclick=()=>play(t);
+    card.querySelectorAll('button')[1].onclick=()=>{
+      favorites=favorites.includes(t.id)?favorites.filter(x=>x!==t.id):[...favorites,t.id];
+      save();show();
+    };
+    card.querySelectorAll('button')[2].onclick=()=>{
+      if(!playlist.includes(t.id))playlist.push(t.id);
+      save();msg('Música adicionada à sua playlist.');
+    };
+    grid.appendChild(card);
+  });
+  $('content').appendChild(grid);
+}
+function allTracks(){return [...tracks,...localTracks]}
+function show(){
+  const all=allTracks();
+  if(view==='favorites')return render('♥ Suas favoritas',all.filter(t=>favorites.includes(t.id)));
+  if(view==='playlists')return render('☷ Minha playlist',all.filter(t=>playlist.includes(t.id)));
+  if(view==='local')return render('＋ Músicas deste dispositivo',localTracks);
+  if(view==='search')return render('⌕ Explore o catálogo',tracks);
+  render('♫ Músicas para descobrir',tracks);
+}
+function play(t){
+  const all=allTracks();
+  current=all.findIndex(x=>x.id===t.id);
+  if(current<0)return;
+  audio.src=t.url;
+  $('nowTitle').textContent=t.title;
+  $('nowArtist').textContent=t.artist;
+  audio.play().then(()=>$('toggle').textContent='Ⅱ')
+    .catch(()=>{msg('Não foi possível reproduzir esta faixa. Verifique a conexão ou o arquivo.');});
+}
+function next(step){
+  const all=allTracks();
+  if(!all.length)return;
+  current=(current+step+all.length)%all.length;
+  play(all[current]);
+}
+$('toggle').onclick=()=>{
+  if(!audio.src){if(allTracks().length)play(allTracks()[0]);else msg('Pesquise uma música ou adicione um arquivo primeiro.');return}
+  if(audio.paused)audio.play().then(()=>$('toggle').textContent='Ⅱ');
+  else audio.pause();
+};
+$('prev').onclick=()=>next(-1);
+$('next').onclick=()=>next(1);
+audio.onplay=()=>$('toggle').textContent='Ⅱ';
+audio.onpause=()=>$('toggle').textContent='▶';
+audio.ontimeupdate=()=>{
+  $('progress').value=audio.duration?audio.currentTime/audio.duration*100:0;
+  $('elapsed').textContent=fmt(audio.currentTime);
+  $('duration').textContent=fmt(audio.duration);
+};
+audio.onended=()=>next(1);
+$('progress').onclick=e=>{
+  if(audio.duration)audio.currentTime=(e.offsetX/e.currentTarget.clientWidth)*audio.duration;
+};
+$('volume').oninput=e=>audio.volume=Number(e.target.value);
+$('mute').onclick=()=>{
+  audio.muted=!audio.muted;$('mute').textContent=audio.muted?'🔇':'🔊';
+};
+
+document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));
+  b.classList.add('active');view=b.dataset.view;
+  if(view==='search')search();
+  else show();
+});
+
+async function search(){
+  const q=$('query').value.trim();
+  if(!q){view='home';show();return}
+  view='search';
+  $('content').innerHTML='<div class="empty">Buscando faixas no catálogo público...</div>';
+  try{
+    const params=new URLSearchParams({
+      q:`mediatype:audio AND (${q.split(/\s+/).map(w=>`title:"${w.replace(/["\\]/g,'')}*" OR creator:"${w.replace(/["\\]/g,'')}*"`).join(' AND ')})`,
+      fl:'identifier,title,creator,licenseurl,rights,description',
+      rows:'30',page:'1',output:'json'
+    });
+    const res=await fetch('https://archive.org/advancedsearch.php?'+params);
+    if(!res.ok)throw Error('Pesquisa indisponível');
+    const data=await res.json();
+    const docs=data.response?.docs||[];
+    const candidates=docs.filter(d=>{
+      const license=String(d.licenseurl||'').toLowerCase();
+      const rights=String(d.rights||'').toLowerCase();
+      return license.includes('creativecommons.org/publicdomain/zero') ||
+        license.includes('creativecommons.org/licenses/by/') ||
+        license.includes('creativecommons.org/publicdomain/mark') ||
+        rights.includes('public domain') || rights.includes('domínio público');
+    });
+    const results=await Promise.all(candidates.slice(0,12).map(async d=>{
+      try{
+        const r=await fetch('https://archive.org/metadata/'+encodeURIComponent(d.identifier));
+        const m=await r.json();
+        const files=(m.files||[]).filter(f=>
+          /\.(mp3|ogg|oga|wav|m4a)$/i.test(f.name||'') &&
+          !f.name.includes('__') && !f.name.includes('_meta')
+        );
+        if(!files.length)return null;
+        const f=files.find(x=>/mp3/i.test(x.name))||files[0];
+        return {
+          id:'ia-'+d.identifier+'-'+f.name,
+          title:Array.isArray(d.title)?d.title[0]:d.title||d.identifier,
+          artist:Array.isArray(d.creator)?d.creator[0]:d.creator||'Artista não informado',
+          url:'https://archive.org/download/'+encodeURIComponent(d.identifier)+'/'+f.name.split('/').map(encodeURIComponent).join('/'),
+          cover:'https://archive.org/services/img/'+encodeURIComponent(d.identifier),
+          license:d.licenseurl||'Direitos declarados pelo item'
+        };
+      }catch(e){return null}
+    }));
+    tracks=results.filter(Boolean);
+    render('Resultados para: '+q,tracks);
+    msg(tracks.length?'Verifique os termos da licença de cada faixa antes de redistribuir ou monetizar.':'Nenhuma faixa com licença reconhecida foi encontrada. Tente outra busca.');
+  }catch(e){
+    $('content').innerHTML='<div class="empty">Não foi possível acessar o catálogo agora.<br>Confira sua internet e tente novamente.</div>';
+    msg('A busca online depende da disponibilidade da API externa.');
+  }
+}
+$('searchBtn').onclick=search;
+$('query').addEventListener('keydown',e=>{if(e.key==='Enter')search()});
+
+const uploader=document.createElement('div');
+uploader.style.cssText='margin-top:16px;display:flex;gap:10px;flex-wrap:wrap';
+uploader.innerHTML='<label class="primary" style="display:inline-block">＋ Adicionar músicas do dispositivo<input id="files" type="file" accept="audio/*" multiple hidden></label><button class="primary" id="newPlaylist">＋ Criar playlist</button>';
+$('content').after(uploader);
+$('files').onchange=e=>{
+  for(const f of e.target.files){
+    if(!f.type.startsWith('audio/'))continue;
+    localTracks.push({
+      id:'local-'+Date.now()+'-'+Math.random().toString(36).slice(2),
+      title:f.name.replace(/\.[^.]+$/,''),
+      artist:'Arquivo do dispositivo',
+      url:URL.createObjectURL(f)
+    });
+  }
+  view='local';show();msg('Arquivos disponíveis nesta sessão. Eles não são enviados ao site.');
+};
+$('newPlaylist').onclick=()=>{
+  const name=prompt('Qual será o nome da playlist?');
+  if(!name||!name.trim())return;
+  playlists.push({id:Date.now(),name:name.trim()});save();
+  msg('Playlist "'+name.trim()+'" criada. Adicione músicas usando o botão + nas faixas.');
+  render('Suas playlists',playlists.map(p=>({
+    id:'pl-'+p.id,title:p.name,artist:'Playlist MW',
+    url:'',cover:''
+  })));
+};
+render('♫ Comece a ouvir',[]);
+</script>
+</body>
+</html>
